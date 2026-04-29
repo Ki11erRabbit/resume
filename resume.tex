@@ -1,0 +1,175 @@
+%% resume.tex — Alec Davis Resume
+%% Build with: make, make all, or make JOBS="..." PROJECTS="..." SKILLS="..."
+%%
+%% This file is the entry point. Content lives in:
+%%   jobs/       — one .tex file per job
+%%   projects/   — one .tex file per project
+%%   skills/     — one .tex file per skill block
+%%
+%% The Makefile passes \def\IncludeJobs{...} etc. on the command line.
+
+\documentclass[10pt, letterpaper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────────────
+\usepackage[margin=0.6in, top=0.5in, bottom=0.5in]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{xstring}
+\usepackage{parskip}
+\usepackage[T1]{fontenc}
+
+% ── Hyperlink style ───────────────────────────────────────────────────────────
+\hypersetup{colorlinks=true, urlcolor=blue, linkcolor=black}
+
+% ── Section heading style ─────────────────────────────────────────────────────
+\titleformat{\section}
+  {\large\bfseries\uppercase}{}{0em}{}[\titlerule]
+\titlespacing{\section}{0pt}{6pt}{4pt}
+
+% ── List style ────────────────────────────────────────────────────────────────
+\setlist[itemize]{noitemsep, topsep=2pt, leftmargin=1.2em}
+
+% ── Key-presence check ────────────────────────────────────────────────────────
+%  \CheckKeys{include-list}{key,key,...}
+%  Sets \ifsectionhascontent true if include-list is "all" OR any key is found.
+%  Used to decide whether to emit a \section heading before its entries.
+%
+%  Implementation: walks the key list recursively using a sentinel token.
+%  Each key is tested with \IfSubStr against the padded include-list.
+%  The recursion stops when it reaches the sentinel or finds a match.
+
+\newif\ifsectionhascontent
+
+\long\def\checknextkey#1,#2\stopcheck#3{%
+  \ifsectionhascontent\else
+    \IfSubStr{,#3,}{,#1,}{\sectionhascontenttrue}{%
+      \IfStrEq{#2}{}{}{\checknextkey#2\stopcheck{#3}}%
+    }%
+  \fi
+}
+
+\newcommand{\CheckKeys}[2]{%
+  \sectionhascontentfalse%
+  \IfStrEq{#1}{all}{\sectionhascontenttrue}{%
+    \checknextkey#2,\stopcheck{#1}%
+  }%
+}
+
+% ── Entry inclusion helper ────────────────────────────────────────────────────
+%  \IncludeIfListed{key}{include-list}{file}
+%  Inputs file if key is in include-list or include-list == "all".
+\newcommand{\IncludeIfListed}[3]{%
+  \IfStrEq{#2}{all}{%
+    \input{#3}%
+  }{%
+    \IfSubStr{,#2,}{,#1,}{\input{#3}}{}%
+  }%
+}
+
+% ── Reusable entry macros ─────────────────────────────────────────────────────
+% \JobEntry{Title}{Org}{Date}{Location}
+\newcommand{\JobEntry}[4]{%
+  \noindent\textbf{#1} \hfill #3 \\
+  \textit{#2} \hfill \textit{#4}
+  \vspace{2pt}
+}
+
+% \ProjectEntry{Name}{Role}{Date}{URL}
+\newcommand{\ProjectEntry}[4]{%
+  \noindent\textbf{#1} \hfill #3 \\
+  \textit{#2} \quad \href{#4}{\texttt{\small #4}}
+  \vspace{2pt}
+}
+
+% \OtherProjectEntry{Name}{Role}{Date}  (no URL)
+\newcommand{\OtherProjectEntry}[3]{%
+  \noindent\textbf{#1} \hfill #3 \\
+  \textit{#2}
+  \vspace{2pt}
+}
+
+% ── Defaults (overridden by Makefile) ─────────────────────────────────────────
+\ifdefined\IncludeJobs\else
+  \def\IncludeJobs{capstone,llnl,byu_research,byu_ta}\fi
+\ifdefined\IncludeProjects\else
+  \def\IncludeProjects{barterbeans,koru,rowan,strong_brew,koka_community,caat}\fi
+\ifdefined\IncludeSkills\else
+  \def\IncludeSkills{languages,skills,frameworks}\fi
+
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+\pagestyle{empty}
+
+% ── Header ────────────────────────────────────────────────────────────────────
+\begin{center}
+  {\LARGE\textbf{Alec Davis}} \\[4pt]
+  (310) 256-8081 \quad \href{mailto:alecdavis11037@gmail.com}{alecdavis11037@gmail.com} \quad Los Angeles, CA \\[2pt]
+  \href{https://github.com/Ki11erRabbit}{github.com/Ki11erRabbit} \quad
+  \href{https://killerrabbit.xyz}{killerrabbit.xyz} \quad
+  \href{https://www.linkedin.com/in/alec-davis-73030b373/}{linkedin.com/in/alec-davis-73030b373}
+\end{center}
+
+% ── Education (always shown) ──────────────────────────────────────────────────
+\section{Education}
+\noindent\textbf{Brigham Young University} \hfill April 2026 \\
+\textit{B.S./B.A. Computer Science, Emphasis in Software Engineering} \hfill \textit{Provo, UT}
+\begin{itemize}
+  \item Linux Club President
+  \item Relevant Coursework: Concepts of Programming Languages, Software Design, Systems Programming,
+        Data Structures and Algorithms, Software Foundations, Technical Writing, QA and Dev Ops,
+        Formal Verification, Operating Systems
+\end{itemize}
+
+% ── Experience ────────────────────────────────────────────────────────────────
+% List every key that belongs to this section as the second argument.
+% The heading is suppressed automatically if none of them are selected.
+\CheckKeys{\IncludeJobs}{capstone,llnl,byu_research,byu_ta,dominos}
+\ifsectionhascontent
+\section{Experience}
+\IncludeIfListed{capstone}{\IncludeJobs}{jobs/capstone}
+\IncludeIfListed{llnl}{\IncludeJobs}{jobs/llnl}
+\IncludeIfListed{byu_research}{\IncludeJobs}{jobs/byu_research}
+\IncludeIfListed{byu_ta}{\IncludeJobs}{jobs/byu_ta}
+\IncludeIfListed{dominos}{\IncludeJobs}{jobs/dominos}
+\fi
+
+% ── Programming Projects ──────────────────────────────────────────────────────
+\CheckKeys{\IncludeProjects}{barterbeanskoru,rowan,strong_brew,cocoa,koka_community,speak_vm,caat,sevi,cwc}
+\ifsectionhascontent
+\section{Programming Projects}
+\IncludeIfListed{barterbeans}{\IncludeProjects}{projects/barterbeans}
+\IncludeIfListed{koru}{\IncludeProjects}{projects/koru}
+\IncludeIfListed{rowan}{\IncludeProjects}{projects/rowan}
+\IncludeIfListed{strong_brew}{\IncludeProjects}{projects/strong_brew}
+\IncludeIfListed{cocoa}{\IncludeProjects}{projects/cocoa}
+\IncludeIfListed{koka_community}{\IncludeProjects}{projects/koka_community}
+\IncludeIfListed{speak_vm}{\IncludeProjects}{projects/speak_vm}
+\IncludeIfListed{caat}{\IncludeProjects}{projects/caat}
+\IncludeIfListed{sevi}{\IncludeProjects}{projects/sevi}
+\IncludeIfListed{cwc}{\IncludeProjects}{projects/cwc}
+\fi
+
+% ── Other Projects ────────────────────────────────────────────────────────────
+\CheckKeys{\IncludeProjects}{wireguard,linux_ws,virt_ws}
+\ifsectionhascontent
+\section{Other Projects}
+\IncludeIfListed{wireguard}{\IncludeProjects}{projects/wireguard}
+\IncludeIfListed{linux_ws}{\IncludeProjects}{projects/linux_ws}
+\IncludeIfListed{virt_ws}{\IncludeProjects}{projects/virt_ws}
+\fi
+
+% ── Skills ────────────────────────────────────────────────────────────────────
+\CheckKeys{\IncludeSkills}{languages,skills,frameworks}
+\ifsectionhascontent
+\section{Skills}
+\IncludeIfListed{languages}{\IncludeSkills}{skills/languages}
+\IncludeIfListed{skills}{\IncludeSkills}{skills/skills}
+\IncludeIfListed{frameworks}{\IncludeSkills}{skills/frameworks}
+\fi
+
+% ── Achievements (always shown) ───────────────────────────────────────────────
+\section{Achievements \& Interests}
+\input{skills/achievements}
+
+\end{document}
