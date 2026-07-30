@@ -56,8 +56,8 @@ LATEXOPTS := -interaction=nonstopmode -halt-on-error
 OUTPUT    ?= resume
 
 # Default curated subset
-DEFAULT_JOBS     := capstone llnl byu_research byu_ta
-DEFAULT_PROJECTS := koru rowan strong_brew koka_community caat
+DEFAULT_JOBS     := pixelogic estateproperties capstone llnl byu_research byu_ta
+DEFAULT_PROJECTS := efiko koru rowan koka_community
 DEFAULT_SKILLS   := languages skills frameworks
 
 JOBS     ?= $(DEFAULT_JOBS)
